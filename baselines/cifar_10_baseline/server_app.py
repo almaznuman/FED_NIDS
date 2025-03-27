@@ -3,6 +3,7 @@
 import torch
 
 from baselines.cifar_10_baseline.loss_Strat import DiversityAwareLossStrategy
+from baselines.cifar_10_baseline.strategy import CustomFedAvg
 from baselines.cifar_10_baseline.task import Net, get_weights, set_weights, test, apply_eval_transforms
 from torch.utils.data import DataLoader
 
@@ -84,38 +85,41 @@ def server_fn(context: Context):
         global_test_set.with_transform(apply_eval_transforms),
         batch_size=32,
     )
+    strategy_type = context.run_config["strategy-type"]
 
-    # # Define strategy
-    # strategy = CustomFedAvg(
-    #     run_config=context.run_config,
-    #     use_wandb=context.run_config["use-wandb"],
-    #     fraction_fit=0.3,
-    #     min_fit_clients=3,
-    #     fraction_evaluate=fraction_eval,
-    #     min_evaluate_clients=min_evaluate_clients,
-    #     min_available_clients=min_available_clients,
-    #     initial_parameters=parameters,
-    #     on_fit_config_fn=on_fit_config,
-    #     evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
-    #     evaluate_metrics_aggregation_fn=weighted_average,
-    # )
+    if strategy_type == "diversity":
 
-    # Initialize the diversity-aware strategy
-    strategy = DiversityAwareLossStrategy(
-        run_config=context.run_config,
-        use_wandb=context.run_config["use-wandb"],
-        fraction_fit=1,
-        min_fit_clients=10,
-        num_clients_to_select=3,
-        diversity_weight=diversity_weight,
-        fraction_evaluate=fraction_eval,
-        min_evaluate_clients=min_evaluate_clients,
-        min_available_clients=min_available_clients,
-        initial_parameters=parameters,
-        on_fit_config_fn=on_fit_config,
-        evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
-        evaluate_metrics_aggregation_fn=weighted_average,
-    )
+        # Initialize the diversity-aware strategy
+        strategy = DiversityAwareLossStrategy(
+            run_config=context.run_config,
+            use_wandb=context.run_config["use-wandb"],
+            fraction_fit=1,
+            min_fit_clients=10,
+            num_clients_to_select=3,
+            diversity_weight=diversity_weight,
+            fraction_evaluate=fraction_eval,
+            min_evaluate_clients=min_evaluate_clients,
+            min_available_clients=min_available_clients,
+            initial_parameters=parameters,
+            on_fit_config_fn=on_fit_config,
+            evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
+            evaluate_metrics_aggregation_fn=weighted_average,
+        )
+    else:
+        # Define strategy
+        strategy = CustomFedAvg(
+            run_config=context.run_config,
+            use_wandb=context.run_config["use-wandb"],
+            fraction_fit=0.3,
+            min_fit_clients=3,
+            fraction_evaluate=fraction_eval,
+            min_evaluate_clients=min_evaluate_clients,
+            min_available_clients=min_available_clients,
+            initial_parameters=parameters,
+            on_fit_config_fn=on_fit_config,
+            evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
+            evaluate_metrics_aggregation_fn=weighted_average,
+        )
 
     config = ServerConfig(num_rounds=num_rounds)
 

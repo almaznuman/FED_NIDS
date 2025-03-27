@@ -16,11 +16,11 @@ publisher = "flwrlabs"
 default = "local-sim-gpu"
 
 [tool.flwr.app.components]
-serverapp = "Models.final_CNNBIGRU.server_app:app"
-clientapp = "Models.final_CNNBIGRU.client_app:app"
+serverapp = "baselines.fmnist_baseline.server_app:app"
+clientapp = "baselines.fmnist_baseline.client_app:app"
 
 [tool.flwr.app.config]
-num-server-rounds = 1
+num-server-rounds = 10
 strategy-type = "diversity"
 diversity-weight = 0.4
 fraction-evaluate = 1
@@ -31,7 +31,7 @@ batch-size = 32
 learning-rate = 0.001
 verbose = false
 server-device = "cpu"
-use-wandb = false
+use-wandb = true
 
 [tool.flwr.federations.local-sim.options]
 num-supernodes = 2

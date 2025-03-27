@@ -2,6 +2,7 @@
 
 import torch
 
+from baselines.fmnist_baseline.strategy import CustomFedAvg
 from baselines.fmnist_baseline.task import (
     Net,
     apply_eval_transforms,
@@ -66,11 +67,6 @@ def server_fn(context: Context):
     parameters = ndarrays_to_parameters(ndarrays)
 
     # Prepare dataset for central evaluation
-
-    # This is the exact same dataset as the one donwloaded by the clients via
-    # FlowerDatasets. However, we don't use FlowerDatasets for the server since
-    # partitioning is not needed.
-    # We make use of the "test" split only
     global_test_set = load_dataset("zalando-datasets/fashion_mnist")["test"]
 
     testloader = DataLoader(
@@ -78,37 +74,41 @@ def server_fn(context: Context):
         batch_size=32,
     )
 
-    # # Define strategy
-    # strategy = CustomFedAvg(
-    #     run_config=context.run_config,
-    #     use_wandb=context.run_config["use-wandb"],
-    #     fraction_fit=0.3,
-    #     min_fit_clients=3,
-    #     fraction_evaluate=fraction_eval,
-    #     min_evaluate_clients=min_evaluate_clients,
-    #     min_available_clients=min_available_clients,
-    #     initial_parameters=parameters,
-    #     on_fit_config_fn=on_fit_config,
-    #     evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
-    #     evaluate_metrics_aggregation_fn=weighted_average,
-    # )
+    strategy_type = context.run_config["strategy-type"]
 
-    # Initialize the diversity-aware strategy
-    strategy = DiversityAwareLossStrategy(
-        run_config=context.run_config,
-        use_wandb=context.run_config["use-wandb"],
-        fraction_fit=1,
-        min_fit_clients=10,
-        num_clients_to_select=3,
-        diversity_weight=diversity_weight,
-        fraction_evaluate=fraction_eval,
-        min_evaluate_clients=min_evaluate_clients,
-        min_available_clients=min_available_clients,
-        initial_parameters=parameters,
-        on_fit_config_fn=on_fit_config,
-        evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
-        evaluate_metrics_aggregation_fn=weighted_average,
-    )
+    if strategy_type == "diversity":
+
+        # Initialize the diversity-aware strategy
+        strategy = DiversityAwareLossStrategy(
+            run_config=context.run_config,
+            use_wandb=context.run_config["use-wandb"],
+            fraction_fit=1,
+            min_fit_clients=10,
+            num_clients_to_select=3,
+            diversity_weight=diversity_weight,
+            fraction_evaluate=fraction_eval,
+            min_evaluate_clients=min_evaluate_clients,
+            min_available_clients=min_available_clients,
+            initial_parameters=parameters,
+            on_fit_config_fn=on_fit_config,
+            evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
+            evaluate_metrics_aggregation_fn=weighted_average,
+        )
+    else:
+        # Define strategy
+        strategy = CustomFedAvg(
+            run_config=context.run_config,
+            use_wandb=context.run_config["use-wandb"],
+            fraction_fit=0.3,
+            min_fit_clients=3,
+            fraction_evaluate=fraction_eval,
+            min_evaluate_clients=min_evaluate_clients,
+            min_available_clients=min_available_clients,
+            initial_parameters=parameters,
+            on_fit_config_fn=on_fit_config,
+            evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
+            evaluate_metrics_aggregation_fn=weighted_average,
+        )
     
     config = ServerConfig(num_rounds=num_rounds)
 
