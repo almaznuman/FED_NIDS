@@ -1,0 +1,22 @@
+Using device: cuda
+
+Using device: cuda
+
+Loading and preprocessing data...
+
+Performing feature selection...
+
+Selected 21 features for binary classification:
+['sttl', 'id', 'ct_dst_src_ltm', 'dload', 'smean', 'synack', 'ct_srv_dst', 'dbytes', 'dttl', 'dur', 'tcprtt', 'ct_srv_src', 'djit', 'sloss', 'dloss', 'ct_src_ltm', 'ct_dst_sport_ltm', 'ct_dst_ltm', 'proto', 'response_body_len', 'dwin']   
+
+Selected 21 features for multi-class classification:
+['id', 'sbytes', 'sttl', 'ct_srv_dst', 'ct_state_ttl', 'service', 'ct_src_dport_ltm', 'ct_dst_sport_ltm', 'dbytes', 'dmean', 'dinpkt', 'sinpkt', 'sloss', 'spkts', 'djit', 'state', 'dtcpb', 'stcpb', 'swin', 'response_body_len', 'is_ftp_login']
+
+Final 16 features after RFECV (Binary):
+['sttl', 'id', 'dload', 'synack', 'dbytes', 'dttl', 'tcprtt', 'ct_srv_src', 'djit', 'sloss', 'dloss', 'ct_src_ltm', 'ct_dst_sport_ltm', 'ct_dst_ltm', 'response_body_len', 'dwin']
+
+Final 18 features after RFECV (Multi-Class):
+['id', 'sbytes', 'sttl', 'ct_srv_dst', 'ct_state_ttl', 'service', 'ct_src_dport_ltm', 'ct_dst_sport_ltm', 'dbytes', 'dmean', 'dinpkt', 'sinpkt', 'sloss', 'spkts', 'state', 'swin', 'response_body_len', 'is_ftp_login']
+
+Using 28 common features for both tasks
+Selected indices: [np.int64(0), np.int64(3), np.int64(4), np.int64(5), np.int64(7), np.int64(8), np.int64(10), np.int64(11), np.int64(13), np.int64(14), np.int64(15), np.int64(16), np.int64(17), np.int64(19), np.int64(20), np.int64(23), np.int64(24), np.int64(25), np.int64(28), np.int64(30), np.int64(31), np.int64(32), np.int64(33), np.int64(34), np.int64(35), np.int64(37), np.int64(40), np.int64(41)]

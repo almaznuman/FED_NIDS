@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pytorch-example"
+version = "1.0.0"
+description = "Federated Learning with PyTorch and Flower (Advanced Example)"
+license = "Apache-2.0"
+dependencies = [
+    "flwr[simulation]>=1.16.0",
+    "flwr-datasets[vision]>=0.5.0",
+    "torch==2.5.1",
+    "torchvision==0.20.1",
+    "wandb==0.17.8",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.flwr.app]
+publisher = "flwrlabs"
+
+[tool.flwr.app.components]
+serverapp = "Models.final_CNNBIGRU.server_app:app"
+clientapp = "Models.final_CNNBIGRU.client_app:app"
+
+[tool.flwr.app.config]
+num-server-rounds = 10
+strategy-type = "diversity"
+diversity-weight = 0.4
+fraction-evaluate = 1
+min-available-clients=10
+min-evaluate-clients=10
+local-epochs = 1
+batch-size = 32
+learning-rate = 0.001
+verbose = false
+server-device = "cpu"
+use-wandb = false
+
+[tool.flwr.federations]
+default = "local-sim-gpu"
+
+[tool.flwr.federations.local-sim]
+options.num-supernodes = 2
+options.backend.client-resources.num-cpus = 2 # each ClientApp assumes to use 2CPUs
+options.backend.client-resources.num-gpus = 0.0 # ratio of VRAM a ClientApp has access to
+[tool.flwr.federations.local-sim-gpu]
+options.num-supernodes = 10
+options.backend.client-resources.num-cpus = 2
+options.backend.client-resources.num-gpus = 0.25
