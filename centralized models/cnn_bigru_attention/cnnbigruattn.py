@@ -468,8 +468,8 @@ def plot_metrics(metrics):
 
 def main():
     # Set paths to your data files
-    train_path = 'UNSW_NB15_training-set.csv'
-    test_path = 'UNSW_NB15_testing-set.csv'
+    train_path = '../../dataset/UNSW_NB15_testing-set.csv'
+    test_path = '../../dataset/UNSW_NB15_testing-set.csv'
 
     # Create model checkpoint directory
     checkpoint_dir = "model_checkpoints"
