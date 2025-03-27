@@ -50,7 +50,7 @@ def load_data(partition_id: int, num_partitions: int):
         partitioner = DirichletPartitioner(
             num_partitions=num_partitions,
             partition_by="label",
-            alpha=0.01,  # Lower alpha creates more non-IID partitioning
+            alpha=0.5,  # Lower alpha creates more non-IID partitioning
             seed=42,
         )
         fds = FederatedDataset(
