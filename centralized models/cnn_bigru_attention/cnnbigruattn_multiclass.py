@@ -437,7 +437,7 @@ def main():
         model,
         train_loader,
         val_loader,
-        num_epochs=2,
+        num_epochs=30,
         learning_rate=0.001,
         patience=5,  # Early stopping patience
         checkpoint_dir=checkpoint_dir

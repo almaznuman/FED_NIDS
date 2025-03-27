@@ -2,3 +2,7 @@ __pycache__/
 outputs/
 wandb/
 /outputs
+/centralized models/cnn_bigru/binary_model_checkpoints/
+/centralized models/cnn_bigru/multiclass_model_checkpoints/
+/centralized models/cnn_bigru_attention/binary_model_checkpoints/
+/centralized models/cnn_bigru_attention/multiclass_model_checkpoints/
