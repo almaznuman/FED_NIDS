@@ -21,7 +21,7 @@ clientapp = "baselines.fmnist_baseline.client_app:app"
 
 [tool.flwr.app.config]
 num-server-rounds = 10
-strategy-type = "diversity"
+strategy-type = "fedavg"
 diversity-weight = 0.4
 fraction-evaluate = 1
 min-available-clients = 10
