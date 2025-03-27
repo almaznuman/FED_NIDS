@@ -16,12 +16,12 @@ publisher = "flwrlabs"
 default = "local-sim-gpu"
 
 [tool.flwr.app.components]
-serverapp = "baselines.fmnist_baseline.server_app:app"
-clientapp = "baselines.fmnist_baseline.client_app:app"
+serverapp = "baselines.cifar_10_baseline.server_app:app"
+clientapp = "baselines.cifar_10_baseline.client_app:app"
 
 [tool.flwr.app.config]
 num-server-rounds = 10
-strategy-type = "fedavg"
+strategy-type = "diversity"
 diversity-weight = 0.4
 fraction-evaluate = 1
 min-available-clients = 10
