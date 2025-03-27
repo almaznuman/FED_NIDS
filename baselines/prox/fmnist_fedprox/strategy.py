@@ -1,18 +1,18 @@
-"""FedProx strategy implementation for CIFAR-10."""
+"""FedProx strategy implementation for Fashion MNIST."""
 
 import json
 from logging import INFO
 
 import torch
 import wandb
-from baselines.cifar_10_fedprox.task import Net, create_run_dir, set_weights
+from baselines.prox.fmnist_fedprox.task import Net, create_run_dir, set_weights
 
 from flwr.common import logger, parameters_to_ndarrays
 from flwr.common.typing import UserConfig
 from flwr.server.strategy import FedProx
 
 
-PROJECT_NAME = "FedProx vs FedAvg CIFAR-10"
+PROJECT_NAME = "FedProx vs FedAvg Comparison"
 
 
 class CustomFedProx(FedProx):

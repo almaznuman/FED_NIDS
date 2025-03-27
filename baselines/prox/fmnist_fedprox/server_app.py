@@ -1,9 +1,9 @@
-"""FedProx server implementation for CIFAR-10."""
+"""FedProx server implementation for Fashion MNIST."""
 
 import torch
 
-from baselines.cifar_10_fedprox.strategy import CustomFedProx
-from baselines.cifar_10_fedprox.task import (
+from baselines.prox.fmnist_fedprox.strategy import CustomFedProx
+from baselines.prox.fmnist_fedprox.task import (
     Net,
     apply_eval_transforms,
     get_weights,
@@ -28,13 +28,8 @@ def gen_evaluate_fn(
         net = Net()
         set_weights(net, parameters_ndarrays)
         net.to(device)
-        loss, accuracy, f1, precision, recall = test(net, testloader, device=device)
-        return loss, {
-            "centralized_accuracy": accuracy,
-            "centralized_f1": f1,
-            "centralized_precision": precision,
-            "centralized_recall": recall
-        }
+        loss, accuracy = test(net, testloader, device=device)
+        return loss, {"centralized_accuracy": accuracy}
 
     return evaluate
 
@@ -43,7 +38,7 @@ def on_fit_config(server_round: int):
     """Return training configuration for each round."""
     # Adjust learning rate based on round
     lr = 0.01
-    if server_round > 20:
+    if server_round > 10:
         lr /= 2
     return {"lr": lr}
 
@@ -61,7 +56,7 @@ def weighted_average(metrics):
 
 def server_fn(context: Context):
     """Return server components for federated learning."""
-    # Read from config
+    # Hardcoded configuration values
     num_rounds = 10
     fraction_fit = 0.3
     fraction_eval = 1
@@ -69,15 +64,26 @@ def server_fn(context: Context):
     min_fit_clients = 3
     min_evaluate_clients = 10
     server_device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    proximal_mu = 0.1 
+    proximal_mu = 0.2  # Ideal value for Fashion MNIST
     use_wandb = False
-    
+
+    # Store values in run_config for consistency
+    # context.run_config["num-server-rounds"] = num_rounds
+    # context.run_config["fraction-fit"] = fraction_fit
+    # context.run_config["fraction-evaluate"] = fraction_eval
+    # context.run_config["min-available-clients"] = min_available_clients
+    # context.run_config["min-fit-clients"] = min_fit_clients
+    # context.run_config["min-evaluate-clients"] = min_evaluate_clients
+    # context.run_config["server-device"] = server_device
+    # context.run_config["proximal-mu"] = proximal_mu
+    # context.run_config["use-wandb"] = use_wandb
+
     # Initialize model parameters
     ndarrays = get_weights(Net())
     parameters = ndarrays_to_parameters(ndarrays)
 
     # Prepare dataset for central evaluation
-    global_test_set = load_dataset("uoft-cs/cifar10")["test"]
+    global_test_set = load_dataset("zalando-datasets/fashion_mnist")["test"]
     testloader = DataLoader(
         global_test_set.with_transform(apply_eval_transforms),
         batch_size=32,

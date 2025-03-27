@@ -1,7 +1,7 @@
-"""FedProx client implementation for CIFAR-10."""
+"""FedProx client implementation for Fashion MNIST."""
 
 import torch
-from baselines.cifar_10_fedprox.task import Net, get_weights, load_data, set_weights, train, test
+from baselines.prox.fmnist_fedprox.task import Net, get_weights, load_data, set_weights, train, test
 
 from flwr.client import ClientApp, NumPyClient
 from flwr.common import Context
@@ -42,8 +42,8 @@ class FlowerClient(NumPyClient):
             self.net,
             self.trainloader,
             self.local_epochs,
-            device=self.device,
             lr=float(lr),
+            device=self.device,
             proximal_mu=proximal_mu,  # Pass the proximal term coefficient
             global_parameters=parameters,  # Pass global model parameters
         )
@@ -55,8 +55,7 @@ class FlowerClient(NumPyClient):
         """Evaluate the global model on the local validation set."""
         set_weights(self.net, parameters)
         
-        # Use only loss and accuracy for the client evaluation return
-        loss, accuracy, _, _, _ = test(self.net, self.valloader, self.device)
+        loss, accuracy = test(self.net, self.valloader, self.device)
         return loss, len(self.valloader.dataset), {"accuracy": accuracy}
 
 
@@ -70,13 +69,13 @@ def client_fn(context: Context):
     num_partitions = context.node_config["num-partitions"]
     
     # Load data for this partition
-    trainloader, testloader = load_data(partition_id, num_partitions)
+    trainloader, valloader = load_data(partition_id, num_partitions)
     
     # Get local training config
     local_epochs = context.run_config["local-epochs"]
 
     # Return Client instance
-    return FlowerClient(net, trainloader, testloader, local_epochs).to_client()
+    return FlowerClient(net, trainloader, valloader, local_epochs).to_client()
 
 
 # Create Flower ClientApp
