@@ -22,7 +22,7 @@ from flwr.server.strategy import FedAvg
 from Models.final_CNNBIGRU_multiclass.task import create_run_dir, load_model, set_weights
 
 # Define a project name for logging (if using W&B)
-PROJECT_NAME = "CNNBIGRU Loss Strategy"
+PROJECT_NAME = "UNSW TEST Multi"
 
 
 class LossBasedSelectionStrategy(FedAvg):

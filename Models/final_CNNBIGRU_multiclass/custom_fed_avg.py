@@ -13,7 +13,7 @@ from flwr.common import logger, parameters_to_ndarrays
 from flwr.common.typing import UserConfig
 from flwr.server.strategy import FedAvg
 
-PROJECT_NAME = "CNNBIGRU_multi Loss Strategy"
+PROJECT_NAME = "UNSW TEST Multi"
 
 
 class CustomFedAvg(FedAvg):

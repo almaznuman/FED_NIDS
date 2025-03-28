@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as f
 import torch.optim as optim
-from flwr_datasets.partitioner import DirichletPartitioner
+from flwr_datasets.partitioner import DirichletPartitioner, IidPartitioner
 # from flwr_datasets.visualization import plot_label_distributions
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler, MinMaxScaler
@@ -198,11 +198,16 @@ def load_data(partition_id, num_partitions):
         # Initialize the partitioner
         partitioner = DirichletPartitioner(
             num_partitions=num_partitions,
-            partition_by="label",  # Your target column
+            partition_by="attack_cat",  # Fixed target column name
             alpha=0.5,
             self_balancing=False,
             seed=42
         )
+
+        # Use IidPartitioner instead if needed
+        # partitioner = IidPartitioner(
+        #     num_partitions=num_partitions,
+        # )
 
         partitioner.dataset = dataset["train"]
         fds = partitioner  # Cache the partitioner
