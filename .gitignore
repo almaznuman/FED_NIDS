@@ -6,3 +6,4 @@ wandb/
 /centralized models/cnn_bigru/multiclass_model_checkpoints/
 /centralized models/cnn_bigru_attention/binary_model_checkpoints/
 /centralized models/cnn_bigru_attention/multiclass_model_checkpoints/
+/misc/
