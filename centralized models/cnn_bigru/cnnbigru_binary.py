@@ -344,7 +344,7 @@ def plot_metrics(metrics):
 
     plt.xlabel('Metrics')
     plt.ylabel('Scores')
-    plt.title('CNN + Bi-GRU with Attention - Binary Classification (PyTorch)')
+    plt.title('CNN + Bi-GRU- Binary Classification')
     plt.ylim(0, 1.0)
 
     # Add values on top of bars
