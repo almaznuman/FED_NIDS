@@ -147,30 +147,51 @@ class LossBasedSelectionStrategy(FedAvg):
             return super().aggregate_fit(server_round, results, failures)
 
         # Random selection for first round when loss history is not available
-        if server_round == 1:
-            selected_results = random.sample(results, min(self.num_clients_to_select, len(results)))
-            logger.log(WARNING,
-                       f"Round {server_round}: Random Selection Used - Clients: {[client.cid for client, _ in selected_results]}")
-        else:
-            # Loss-based selection
-            client_losses = []
-            for client, fit_res in results:
-                loss = self.client_loss_history.get(client.cid, float('inf'))
-                client_losses.append((client, fit_res, loss))
+        # if server_round == 1:
+        #     selected_results = random.sample(results, min(self.num_clients_to_select, len(results)))
+        #     logger.log(WARNING,
+        #                f"Round {server_round}: Random Selection Used - Clients: {[client.cid for client, _ in selected_results]}")
+        # else:
+        #     # Loss-based selection
+        #     client_losses = []
+        #     for client, fit_res in results:
+        #         loss = self.client_loss_history.get(client.cid, float('inf'))
+        #         client_losses.append((client, fit_res, loss))
+        #
+        #     # Sort by loss (ascending - lower is better)
+        #     client_losses.sort(key=lambda x: x[2])
+        #
+        #     # Log client losses
+        #     logger.log(WARNING,
+        #                f"Round {server_round}: Client losses: {[(c.cid, loss) for c, _, loss in client_losses]}")
+        #
+        #     # Select top clients with lowest loss
+        #     selected_results = [(client, fit_res) for client, fit_res, _ in
+        #                         client_losses[:min(self.num_clients_to_select, len(client_losses))]]
+        #
+        #     logger.log(WARNING,
+        #                f"Round {server_round}: Selected {len(selected_results)} clients based on loss: {[c.cid for c, _ in selected_results]}")
 
-            # Sort by loss (ascending - lower is better)
-            client_losses.sort(key=lambda x: x[2])
+        # Loss-based selection
 
-            # Log client losses
-            logger.log(WARNING,
-                       f"Round {server_round}: Client losses: {[(c.cid, loss) for c, _, loss in client_losses]}")
+        client_losses = []
+        for client, fit_res in results:
+            loss = self.client_loss_history.get(client.cid, float('inf'))
+            client_losses.append((client, fit_res, loss))
 
-            # Select top clients with lowest loss
-            selected_results = [(client, fit_res) for client, fit_res, _ in
-                                client_losses[:min(self.num_clients_to_select, len(client_losses))]]
+        # Sort by loss (ascending - lower is better)
+        client_losses.sort(key=lambda x: x[2])
 
-            logger.log(WARNING,
-                       f"Round {server_round}: Selected {len(selected_results)} clients based on loss: {[c.cid for c, _ in selected_results]}")
+        # Log client losses
+        logger.log(WARNING,
+                   f"Round {server_round}: Client losses: {[(c.cid, loss) for c, _, loss in client_losses]}")
+
+        # Select top clients with lowest loss
+        selected_results = [(client, fit_res) for client, fit_res, _ in
+                            client_losses[:min(self.num_clients_to_select, len(client_losses))]]
+
+        logger.log(WARNING,
+                   f"Round {server_round}: Selected {len(selected_results)} clients based on loss: {[c.cid for c, _ in selected_results]}")
 
         # Call parent's aggregate_fit with selected clients only
         parameters, metrics = super().aggregate_fit(server_round, selected_results, failures)
@@ -286,37 +307,64 @@ class DiversityAwareLossStrategy(LossBasedSelectionStrategy):
         self.update_client_loss_history(results)
         self.update_client_diversity_history(results)
 
-        # Random selection for first round when history is incomplete
-        if server_round == 1:
-            selected_results = random.sample(results, min(self.num_clients_to_select, len(results)))
-            logger.log(WARNING,
-                       f"Round {server_round}: Random Selection Used - Clients: {[client.cid for client, _ in selected_results]}")
-        else:
-            # Calculate combined scores (lower is better for loss, higher is better for diversity)
-            client_scores = []
-            for client, fit_res in results:
-                loss = self.client_loss_history.get(client.cid, float('inf'))
-                diversity = self.client_diversity_history.get(client.cid, 0.0)
-                
-                # Normalize and combine scores
-                # -1 * diversity because higher diversity is better, but we sort ascending
-                combined_score = (1 - self.diversity_weight) * loss - self.diversity_weight * diversity
-                
-                client_scores.append((client, fit_res, combined_score, loss, diversity))
+        # # Random selection for first round when history is incomplete
+        # if server_round == 1:
+        #     selected_results = random.sample(results, min(self.num_clients_to_select, len(results)))
+        #     logger.log(WARNING,
+        #                f"Round {server_round}: Random Selection Used - Clients: {[client.cid for client, _ in selected_results]}")
+        # else:
+        #     # Calculate combined scores (lower is better for loss, higher is better for diversity)
+        #     client_scores = []
+        #     for client, fit_res in results:
+        #         loss = self.client_loss_history.get(client.cid, float('inf'))
+        #         diversity = self.client_diversity_history.get(client.cid, 0.0)
+        #
+        #         # Normalize and combine scores
+        #         # -1 * diversity because higher diversity is better, but we sort ascending
+        #         combined_score = (1 - self.diversity_weight) * loss - self.diversity_weight * diversity
+        #
+        #         client_scores.append((client, fit_res, combined_score, loss, diversity))
+        #
+        #     # Sort by combined score (lower is better)
+        #     client_scores.sort(key=lambda x: x[2])
+        #
+        #     # Log client scores
+        #     logger.log(WARNING,
+        #                f"Round {server_round}: Client scores: {[(c.cid, score, loss, div) for c, _, score, loss, div in client_scores]}")
+        #
+        #     # Select top clients with best combined scores
+        #     selected_results = [(client, fit_res) for client, fit_res, _, _, _ in
+        #                         client_scores[:min(self.num_clients_to_select, len(client_scores))]]
+        #
+        #     logger.log(WARNING,
+        #                f"Round {server_round}: Selected {len(selected_results)} clients based on diversity-aware score")
 
-            # Sort by combined score (lower is better)
-            client_scores.sort(key=lambda x: x[2])
+        # Calculate combined scores (lower is better for loss, higher is better for diversity)
 
-            # Log client scores
-            logger.log(WARNING,
-                       f"Round {server_round}: Client scores: {[(c.cid, score, loss, div) for c, _, score, loss, div in client_scores]}")
+        client_scores = []
+        for client, fit_res in results:
+            loss = self.client_loss_history.get(client.cid, float('inf'))
+            diversity = self.client_diversity_history.get(client.cid, 0.0)
 
-            # Select top clients with best combined scores
-            selected_results = [(client, fit_res) for client, fit_res, _, _, _ in
-                                client_scores[:min(self.num_clients_to_select, len(client_scores))]]
+            # Normalize and combine scores
+            # -1 * diversity because higher diversity is better, but we sort ascending
+            combined_score = (1 - self.diversity_weight) * loss - self.diversity_weight * diversity
 
-            logger.log(WARNING,
-                       f"Round {server_round}: Selected {len(selected_results)} clients based on diversity-aware score")
+            client_scores.append((client, fit_res, combined_score, loss, diversity))
+
+        # Sort by combined score (lower is better)
+        client_scores.sort(key=lambda x: x[2])
+
+        # Log client scores
+        logger.log(WARNING,
+                   f"Round {server_round}: Client scores: {[(c.cid, score, loss, div) for c, _, score, loss, div in client_scores]}")
+
+        # Select top clients with best combined scores
+        selected_results = [(client, fit_res) for client, fit_res, _, _, _ in
+                            client_scores[:min(self.num_clients_to_select, len(client_scores))]]
+
+        logger.log(WARNING,
+                   f"Round {server_round}: Selected {len(selected_results)} clients based on diversity-aware score")
 
         # Call parent's aggregate_fit with selected clients only, skipping selection
         parameters, metrics = super().aggregate_fit(server_round, selected_results, failures, skip_selection=True)
