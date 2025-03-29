@@ -16,7 +16,7 @@ from datasets import load_dataset
 from flwr.common import Context, ndarrays_to_parameters
 from flwr.server import ServerApp, ServerAppComponents, ServerConfig
 
-from baselines.fmnist_baseline.loss_Strat import DiversityAwareLossStrategy
+from baselines.fmnist_baseline.loss_Strat import ReliabilityIndex
 
 def gen_evaluate_fn(
     testloader: DataLoader,
@@ -79,7 +79,7 @@ def server_fn(context: Context):
     if strategy_type == "diversity":
 
         # Initialize the diversity-aware strategy
-        strategy = DiversityAwareLossStrategy(
+        strategy = ReliabilityIndex(
             run_config=context.run_config,
             use_wandb=context.run_config["use-wandb"],
             fraction_fit=1,

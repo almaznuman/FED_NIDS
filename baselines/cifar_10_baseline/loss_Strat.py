@@ -234,7 +234,7 @@ class LossBasedSelectionStrategy(FedAvg):
         return loss, metrics
 
 
-class DiversityAwareLossStrategy(LossBasedSelectionStrategy):
+class ReliabilityIndex(LossBasedSelectionStrategy):
     """
     Strategy that selects clients based on both loss and model diversity.
     Balances exploration (diversity) and exploitation (performance).
@@ -364,7 +364,7 @@ class DiversityAwareLossStrategy(LossBasedSelectionStrategy):
                             client_scores[:min(self.num_clients_to_select, len(client_scores))]]
 
         logger.log(WARNING,
-                   f"Round {server_round}: Selected {len(selected_results)} clients based on diversity-aware score")
+                   f"Round {server_round}: Selected {len(selected_results)} clients based on Reliability Index")
 
         # Call parent's aggregate_fit with selected clients only, skipping selection
         parameters, metrics = super().aggregate_fit(server_round, selected_results, failures, skip_selection=True)

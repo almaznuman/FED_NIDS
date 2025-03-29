@@ -7,7 +7,7 @@ from flwr.server import ServerApp, ServerAppComponents, ServerConfig
 from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 
 from Models.final_CNNBIGRU_multiclass.custom_fed_avg import CustomFedAvg
-from Models.final_CNNBIGRU_multiclass.loss_strat import DiversityAwareLossStrategy
+from Models.final_CNNBIGRU_multiclass.loss_strat import ReliabilityIndex
 from Models.final_CNNBIGRU_multiclass.task import load_model, load_cen_data, get_weights, set_weights, test
 
 
@@ -131,7 +131,7 @@ def server_fn(context: Context):
     # Select strategy based on strategy_type
     if strategy_type == "diversity":
         diversity_weight = context.run_config["diversity-weight"]
-        strategy = DiversityAwareLossStrategy(
+        strategy = ReliabilityIndex(
             run_config=context.run_config,
             use_wandb=context.run_config["use-wandb"],
             fraction_fit=1,

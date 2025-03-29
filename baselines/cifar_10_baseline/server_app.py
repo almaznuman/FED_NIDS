@@ -2,7 +2,7 @@
 
 import torch
 
-from baselines.cifar_10_baseline.loss_Strat import DiversityAwareLossStrategy
+from baselines.cifar_10_baseline.loss_Strat import ReliabilityIndex
 from baselines.cifar_10_baseline.strategy import CustomFedAvg
 from baselines.cifar_10_baseline.task import Net, get_weights, set_weights, test, apply_eval_transforms
 from torch.utils.data import DataLoader
@@ -90,7 +90,7 @@ def server_fn(context: Context):
     if strategy_type == "diversity":
 
         # Initialize the diversity-aware strategy
-        strategy = DiversityAwareLossStrategy(
+        strategy = ReliabilityIndex(
             run_config=context.run_config,
             use_wandb=context.run_config["use-wandb"],
             fraction_fit=1,
