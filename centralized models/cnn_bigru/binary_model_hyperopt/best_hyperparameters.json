@@ -1,0 +1,11 @@
+{
+    "cnn_filters": 64,
+    "kernel_size": 3,
+    "hidden_dim": 8,
+    "fc_units": 100,
+    "dropout": 0.09949570052078302,
+    "bidirectional": false,
+    "num_layers": 1,
+    "batch_size": 16,
+    "learning_rate": 0.000643760585486522
+}

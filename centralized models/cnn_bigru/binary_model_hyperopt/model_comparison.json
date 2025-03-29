@@ -1,0 +1,7 @@
+{
+    "original_model_size": 45257,
+    "optimized_model_size": 3033,
+    "size_reduction_percent": 93.29827430010828,
+    "accuracy": 0.9975100962560349,
+    "f1_score": 0.9977257599289994
+}
