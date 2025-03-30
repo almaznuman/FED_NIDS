@@ -119,15 +119,15 @@ class FlowerClient(NumPyClient):
         return avg_diff
 
     def evaluate(self, parameters, config):
-        """Evaluate the global model on the local validation set.
-
-        Calculates the L2 norm between the global model and the personalized model,
-        then returns this as an additional metric.
-        """
+        """Evaluate the global model on the local validation set."""
         set_weights(self.net, parameters)
-
-        loss, accuracy = test(self.net, self.valloader, self.device)
-        return loss, len(self.valloader.dataset), {"accuracy": accuracy}
+        loss, accuracy, f1, precision, recall = test(self.net, self.valloader, self.device)
+        return loss, len(self.valloader.dataset), {
+            "accuracy": accuracy,
+            "f1_score": f1,
+            "precision": precision,
+            "recall": recall
+        }
 
 
 def client_fn(context: Context):

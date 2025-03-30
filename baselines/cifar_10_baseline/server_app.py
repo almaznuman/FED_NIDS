@@ -26,9 +26,9 @@ def gen_evaluate_fn(
         loss, accuracy, f1, precision, recall = test(net, testloader, device=device)
         return loss, {
             "centralized_accuracy": accuracy,
-            # "centralized_f1": f1,
-            # "centralized_precision": precision,
-            # "centralized_recall": recall
+            "centralized_f1": f1,
+            "centralized_precision": precision,
+            "centralized_recall": recall
         }
 
     return evaluate
@@ -57,9 +57,9 @@ def weighted_average(metrics):
     # Aggregate and return all metrics (weighted average)
     return {
         "federated_evaluate_accuracy": sum(accuracies) / sum(examples),
-        # "federated_evaluate_f1": sum(f1_scores) / sum(examples),
-        # "federated_evaluate_precision": sum(precisions) / sum(examples),
-        # "federated_evaluate_recall": sum(recalls) / sum(examples)
+        "federated_evaluate_f1": sum(f1_scores) / sum(examples),
+        "federated_evaluate_precision": sum(precisions) / sum(examples),
+        "federated_evaluate_recall": sum(recalls) / sum(examples)
     }
 
 

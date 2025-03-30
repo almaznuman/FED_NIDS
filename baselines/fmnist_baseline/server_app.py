@@ -29,8 +29,13 @@ def gen_evaluate_fn(
         net = Net()
         set_weights(net, parameters_ndarrays)
         net.to(device)
-        loss, accuracy = test(net, testloader, device=device)
-        return loss, {"centralized_accuracy": accuracy}
+        loss, accuracy, f1, precision, recall = test(net, testloader, device=device)
+        return loss, {
+            "centralized_accuracy": accuracy,
+            "centralized_f1": f1,
+            "centralized_precision": precision,
+            "centralized_recall": recall
+        }
 
     return evaluate
 
@@ -48,8 +53,18 @@ def weighted_average(metrics):
     accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
     examples = [num_examples for num_examples, _ in metrics]
 
-    # Aggregate and return custom metric (weighted average)
-    return {"federated_evaluate_accuracy": sum(accuracies) / sum(examples)}
+    # Aggregate additional metrics (weighted average)
+    f1_scores = [num_examples * m["f1_score"] for num_examples, m in metrics]
+    precisions = [num_examples * m["precision"] for num_examples, m in metrics]
+    recalls = [num_examples * m["recall"] for num_examples, m in metrics]
+
+    # Aggregate and return all metrics (weighted average)
+    return {
+        "federated_evaluate_accuracy": sum(accuracies) / sum(examples),
+        "federated_evaluate_f1": sum(f1_scores) / sum(examples),
+        "federated_evaluate_precision": sum(precisions) / sum(examples),
+        "federated_evaluate_recall": sum(recalls) / sum(examples)
+    }
 
 
 def server_fn(context: Context):

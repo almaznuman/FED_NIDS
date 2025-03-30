@@ -18,6 +18,7 @@ from torchvision.transforms import (
     RandomHorizontalFlip,
     ToTensor,
 )
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 from flwr.common.typing import UserConfig
 
@@ -79,16 +80,32 @@ def test(net, testloader, device):
     net.to(device)
     criterion = torch.nn.CrossEntropyLoss()
     correct, loss = 0, 0.0
+    all_labels = []
+    all_predictions = []
+
     with torch.no_grad():
         for batch in testloader:
             images = batch["image"].to(device)
             labels = batch["label"].to(device)
             outputs = net(images)
             loss += criterion(outputs, labels).item()
-            correct += (torch.max(outputs.data, 1)[1] == labels).sum().item()
+            predictions = torch.max(outputs.data, 1)[1]
+            correct += (predictions == labels).sum().item()
+
+            # Store labels and predictions for metric calculation
+            all_labels.extend(labels.cpu().numpy())
+            all_predictions.extend(predictions.cpu().numpy())
+
+    # Calculate metrics
     accuracy = correct / len(testloader.dataset)
     loss = loss / len(testloader)
-    return loss, accuracy
+
+    # Calculate additional metrics using scikit-learn
+    f1 = f1_score(all_labels, all_predictions, average='weighted', zero_division=0)
+    precision = precision_score(all_labels, all_predictions, average='weighted', zero_division=0)
+    recall = recall_score(all_labels, all_predictions, average='weighted', zero_division=0)
+
+    return loss, accuracy, f1, precision, recall
 
 
 def get_weights(net):
