@@ -1,5 +1,3 @@
-"""lol: A Flower / PyTorch app."""
-
 from collections import OrderedDict
 
 from sklearn.metrics import f1_score, precision_score, recall_score
