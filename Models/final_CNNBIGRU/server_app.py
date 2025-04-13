@@ -138,7 +138,7 @@ def server_fn(context: Context):
     parameters = ndarrays_to_parameters(get_weights(model))
 
     # Select strategy based on strategy_type
-    if strategy_type == "diversity":
+    if strategy_type == "reliability_index":
         diversity_weight = context.run_config["diversity-weight"]
         strategy = ReliabilityIndex(
             run_config=context.run_config,
