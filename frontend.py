@@ -30,6 +30,14 @@ def get_available_models():
         "CNN-BIGRU": {
             "serverapp": "Models.final_CNNBIGRU.server_app:app",
             "clientapp": "Models.final_CNNBIGRU.client_app:app"
+        },
+        "FMNIST-Baseline": {
+            "serverapp": "baselines.fmnist_baseline.server_app:app",
+            "clientapp": "baselines.fmnist_baseline.client_app:app"
+        },
+        "CIFAR-10-Baseline": {
+            "serverapp": "baselines.cifar_10_baseline.server_app:app",
+            "clientapp": "baselines.cifar_10_baseline.client_app:app"
         }
     }
 
@@ -46,13 +54,13 @@ def clean_log_line(text):
 def main():
     # Add a more professional header with project description
     st.set_page_config(
-        page_title="UNSW-NB15 Federated Learning Platform",
+        page_title="FED-NIDS",
         page_icon="🔒",
         layout="wide"
     )
 
-    st.title("🔒 UNSW-NB15 Network Intrusion Detection System")
-    st.subheader("Federated Learning Platform with Flower")
+    st.title("🔒 FED-NIDS")
+    st.subheader("Decentralised network intrusion detection powered by Flower.ai")
 
     # Add a visual separator
     st.markdown("<hr style='margin: 15px 0px; height: 1px'>", unsafe_allow_html=True)
@@ -102,8 +110,7 @@ def main():
         default_verbose = config.get("verbose", False)
         default_use_wandb = config.get("use-wandb", False)
         default_server_device = config.get("server-device", "cuda:0")
-        default_strategy_type = config.get("strategy-type", "diversity")
-        default_diversity_weight = config.get("diversity-weight", 0.4)
+        default_strategy_type = config.get("strategy-type", "reliability_index")
 
         # Get federation info without allowing customization
         federations_config = data.get("tool", {}).get("flwr", {}).get("federations", {})
@@ -154,20 +161,12 @@ def main():
 
         # Strategy settings
         st.subheader("🧠 Strategy Settings")
-        strategy_options = ["diversity", "fedavg"]
-        strategy_type = st.selectbox("Strategy Type", strategy_options, index=strategy_options.index(
-            default_strategy_type) if default_strategy_type in strategy_options else 0)
-
-        # Diversity Awareness parameters
-        if strategy_type == "diversity":
-            diversity_weight = st.slider(
-                "Diversity Weight",
-                min_value=0.0,
-                max_value=1.0,
-                value=float(default_diversity_weight),
-                step=0.05,
-                help="Weight for diversity term in the strategy. Higher values emphasize diversity more."
-            )
+        strategy_options = ["reliability_index", "fedavg"]
+        strategy_type = st.selectbox("Strategy Type", 
+            options=strategy_options,
+            index=strategy_options.index(default_strategy_type) if default_strategy_type in strategy_options else 0,
+            help="Reliability Index: Considers client reliability for aggregation\nFedAvg: Standard federated averaging"
+        )
 
         # Create run button - enabled for all strategies
         st.markdown("<br>", unsafe_allow_html=True)
@@ -190,13 +189,6 @@ def main():
                 "use-wandb": use_wandb,
                 "strategy-type": strategy_type
             })
-
-            # Add diversity strategy parameters if applicable
-            if strategy_type == "diversity":
-                diversity_params = {
-                    "diversity-weight": diversity_weight
-                }
-                current_config.update(diversity_params)
 
             # Set the updated config back
             flwr_app["config"] = current_config
@@ -295,6 +287,20 @@ def main():
             - CNN layers for spatial features
             - Bidirectional GRU for efficient sequence learning
             - Optimized for binary classification
+            """,
+            "FMNIST-Baseline": """
+            ### FMNIST Baseline
+            
+            **Architecture:**
+            - Simple CNN architecture
+            - Optimized for Fashion MNIST dataset
+            """,
+            "CIFAR-10-Baseline": """
+            ### CIFAR-10 Baseline
+            
+            **Architecture:**
+            - Simple CNN architecture
+            - Optimized for CIFAR-10 dataset
             """
         }
         st.markdown(model_descriptions.get(model, "Model description not available."))
@@ -305,6 +311,10 @@ def main():
             st.markdown("```\nInput → Conv1D → BiGRU → Dense → Output (Multiclass)\n```")
         elif model == "CNN-BIGRU":
             st.markdown("```\nInput → Conv1D → BiGRU → Dense → Output (Binary)\n```")
+        elif model == "FMNIST-Baseline":
+            st.markdown("```\nInput → Conv2D → MaxPool → Dense → Output\n```")
+        elif model == "CIFAR-10-Baseline":
+            st.markdown("```\nInput → Conv2D → MaxPool → Dense → Output\n```")
         else:
             st.markdown("```\nVisualization not available\n```")
 
@@ -333,12 +343,7 @@ def main():
         st.json(federation_settings)
 
     with config_tabs[3]:
-        strategy_params = {"strategy-type": flwr_app["config"].get("strategy-type", "diversity")}
-
-        # Add strategy-specific parameters
-        if flwr_app["config"].get("strategy-type") == "diversity":
-            strategy_params["diversity-weight"] = flwr_app["config"].get("diversity-weight", 0.4)
-
+        strategy_params = {"strategy-type": flwr_app["config"].get("strategy-type", "reliability_index")}
         st.json(strategy_params)
 
 

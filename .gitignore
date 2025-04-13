@@ -9,3 +9,5 @@ wandb/
 /misc/
 /outputs_csv/
 /script.py
+/wandbex.py
+/exports/
