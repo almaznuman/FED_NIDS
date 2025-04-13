@@ -168,19 +168,6 @@ def server_fn(context: Context):
             evaluate_metrics_aggregation_fn=weighted_average,
         )
 
-        # strategy = CustomFedAvg(
-        #     run_config=context.run_config,
-        #     use_wandb=context.run_config["use-wandb"],
-        #     fraction_fit=1,
-        #     min_fit_clients=10,
-        #     fraction_evaluate=fraction_eval,
-        #     min_evaluate_clients=10,
-        #     min_available_clients=10,
-        #     initial_parameters=parameters,
-        #     evaluate_fn=get_evaluate_fn(),
-        #     evaluate_metrics_aggregation_fn=weighted_average,
-        # )
-
     # Create server configuration
     num_rounds = context.run_config["num-server-rounds"]
     config = ServerConfig(num_rounds=num_rounds)
