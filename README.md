@@ -1,4 +1,4 @@
-# UNSW-NB15 Federated Learning for Network Intrusion Detection
+# FED-NIDS
 
 A federated learning-based network intrusion detection system (NIDS) using PyTorch and Flower framework with the UNSW-NB15 dataset.
 
