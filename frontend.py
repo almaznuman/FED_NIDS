@@ -117,11 +117,11 @@ def main():
         default_federation = data.get("tool", {}).get("flwr", {}).get("federations", {}).get("default", "local-sim-gpu")
 
         # Remove Federation Setup section and replace with info display
-        st.subheader("🌐 Federation Information")
-        federation_info_col1, federation_info_col2 = st.columns(2)
+        st.subheader("🌐 Simulation Information")
+        federation_info_col, federation_info_col1 = st.columns(2)
         with federation_info_col1:
-            st.info(f"Using federation type: **{default_federation}**")
-        with federation_info_col2:
+            st.info(f"Number of selected clients: **3**")
+        with federation_info_col:
             default_num_clients = federations_config.get(default_federation, {}).get("options", {}).get(
                 "num-supernodes", 10)
             st.info(f"Number of clients: **{default_num_clients}**")
@@ -139,7 +139,7 @@ def main():
                 "client-resources", {}).get("num-gpus", 0.0)
             st.info(f"GPU fraction per client: **{default_client_gpus}**")
 
-        st.subheader("⚙️ Training Parameters")
+        st.subheader("⚙️Training Parameters")
         param_col1, param_col2 = st.columns(2)
         with param_col1:
             num_server_rounds = st.slider("Number of Server Rounds", 1, 50, default_num_server_rounds)
@@ -162,10 +162,29 @@ def main():
         # Strategy settings
         st.subheader("🧠 Strategy Settings")
         strategy_options = ["reliability_index", "fedavg"]
-        strategy_type = st.selectbox("Strategy Type", 
-            options=strategy_options,
-            index=strategy_options.index(default_strategy_type) if default_strategy_type in strategy_options else 0,
-            help="Reliability Index: Considers client reliability for aggregation\nFedAvg: Standard federated averaging"
+        strategy_type = st.selectbox("Strategy Type",
+                                     options=strategy_options,
+                                     index=strategy_options.index(
+                                         default_strategy_type) if default_strategy_type in strategy_options else 0,
+                                     help="Reliability Index: Considers client reliability for aggregation\nFedAvg: "
+                                          "Standard federated averaging "
+                                     )
+
+        # Add alpha parameter selection
+        default_alpha = config.get("alpha", 50)
+        alpha_options = [0.01, 0.1, 0.5]
+        alpha_index = 0  # Default to first option if current value isn't in our options
+
+        # Find if current alpha is in our options
+        if default_alpha in alpha_options:
+            alpha_index = alpha_options.index(default_alpha)
+
+        alpha = st.radio(
+            "Data Heterogeneity Level",
+            options=alpha_options,
+            index=alpha_index,
+            horizontal=True,
+            help="Controls the influence of client reliability in model aggregation"
         )
 
         # Create run button - enabled for all strategies
@@ -187,7 +206,8 @@ def main():
                 "local-epochs": local_epochs,
                 "verbose": verbose,
                 "use-wandb": use_wandb,
-                "strategy-type": strategy_type
+                "strategy-type": strategy_type,
+                "alpha": alpha
             })
 
             # Set the updated config back
@@ -329,7 +349,7 @@ def main():
 
     with config_tabs[1]:
         training_params = {k: v for k, v in flwr_app["config"].items() if k in ["num-server-rounds", "local-epochs",
-                                                                                "verbose", "use-wandb"]}
+                                                                                "verbose", "use-wandb", "alpha"]}
         st.json(training_params)
 
     with config_tabs[2]:
