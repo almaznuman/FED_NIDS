@@ -23,7 +23,7 @@ from baselines.cifar_10_baseline.task import create_run_dir, Net, set_weights
 
 # Define a project name for logging (if using W&B)
 # PROJECT_NAME = "Diversity Testing"
-PROJECT_NAME = "FEDAVG vs Reliability Index Runs Cifar runs -1"
+PROJECT_NAME = "DEMO-CIFAR"
 
 
 class LossBasedSelectionStrategy(FedAvg):

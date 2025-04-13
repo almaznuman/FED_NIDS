@@ -23,7 +23,7 @@ from baselines.fmnist_baseline.task import create_run_dir, Net, set_weights
 
 # Define a project name for logging (if using W&B)
 # PROJECT_NAME = "Diversity Testing"
-PROJECT_NAME = "FEDAVG vs Reliability Index Fmnist Runs"
+PROJECT_NAME = "DEMO-Fmnist"
 
 
 class LossBasedSelectionStrategy(FedAvg):
