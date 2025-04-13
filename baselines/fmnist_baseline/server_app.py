@@ -91,7 +91,7 @@ def server_fn(context: Context):
 
     strategy_type = context.run_config["strategy-type"]
 
-    if strategy_type == "diversity":
+    if strategy_type == "reliability_index":
 
         # Initialize the diversity-aware strategy
         strategy = ReliabilityIndex(
