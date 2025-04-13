@@ -124,6 +124,7 @@ def server_fn(context: Context):
     
     # Get strategy type from run config with default fallback to "diversity"
     strategy_type = context.run_config["strategy-type"]
+    alpha = context.run_config["alpha"]
 
     # Get model parameters
     parameters = ndarrays_to_parameters(get_weights(model))
@@ -144,6 +145,8 @@ def server_fn(context: Context):
             initial_parameters=parameters,
             evaluate_fn=get_evaluate_fn(),
             evaluate_metrics_aggregation_fn=weighted_average,
+            strategy_type=strategy_type,
+            alpha=alpha
         )
     else:  # fedavg or any other value defaults to CustomFedAvg
         strategy = CustomFedAvg(
@@ -157,6 +160,8 @@ def server_fn(context: Context):
             initial_parameters=parameters,
             evaluate_fn=get_evaluate_fn(),
             evaluate_metrics_aggregation_fn=weighted_average,
+            strategy_type=strategy_type,
+            alpha=alpha
         )
 
     # Create server configuration
