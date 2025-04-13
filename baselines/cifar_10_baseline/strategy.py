@@ -42,7 +42,7 @@ class CustomFedAvg(FedAvg):
 
     def _init_wandb_project(self):
         # init W&B
-        wandb.init(project=PROJECT_NAME, name=f"{self.strategy_type}- Alpha{self.alpha}")
+        wandb.init(project=PROJECT_NAME, name=f"{self.strategy_type}- Alpha {self.alpha}")
 
     def _store_results(self, tag: str, results_dict):
         """Store results in dictionary, then save as JSON."""

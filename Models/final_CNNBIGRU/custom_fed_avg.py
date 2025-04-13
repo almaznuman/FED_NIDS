@@ -44,7 +44,7 @@ class CustomFedAvg(FedAvg):
 
     def _init_wandb_project(self):
         """Initialize Weights & Biases project for logging."""
-        wandb.init(project=PROJECT_NAME, name=f"{self.strategy_type}- Alpha{self.alpha}")
+        wandb.init(project=PROJECT_NAME, name=f"{self.strategy_type}- Alpha {self.alpha}")
 
     def _store_results(self, tag: str, results_dict: dict) -> None:
         """Store results in an internal dictionary and write them to disk as JSON.

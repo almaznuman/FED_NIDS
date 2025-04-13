@@ -291,7 +291,7 @@ class ReliabilityIndex(LossBasedSelectionStrategy):
     def _init_wandb_project(self):
         """Initialize Weights & Biases logging with diversity weight in run name."""
         # wandb.init(project=PROJECT_NAME, name=f"{str(self.run_dir)}-DW{self.diversity_weight}-ServerApp")
-        wandb.init(project=PROJECT_NAME, name=f"{self.strategy_type}, Alpha{self.alpha}")
+        wandb.init(project=PROJECT_NAME, name=f"{self.strategy_type}, Alpha {self.alpha}")
 
     def update_client_diversity_history(self, results: list[tuple[ClientProxy, FitRes]]):
         """Update client diversity history using training results."""
