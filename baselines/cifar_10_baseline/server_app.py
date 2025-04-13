@@ -86,8 +86,9 @@ def server_fn(context: Context):
         batch_size=32,
     )
     strategy_type = context.run_config["strategy-type"]
+    alpha = context.run_config["alpha"]
 
-    if strategy_type == "diversity":
+    if strategy_type == "reliability_index":
 
         # Initialize the diversity-aware strategy
         strategy = ReliabilityIndex(
@@ -104,6 +105,8 @@ def server_fn(context: Context):
             on_fit_config_fn=on_fit_config,
             evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
             evaluate_metrics_aggregation_fn=weighted_average,
+            strategy_type=strategy_type,
+            alpha=alpha
         )
     else:
         # Define strategy
@@ -119,6 +122,8 @@ def server_fn(context: Context):
             on_fit_config_fn=on_fit_config,
             evaluate_fn=gen_evaluate_fn(testloader, device=server_device),
             evaluate_metrics_aggregation_fn=weighted_average,
+            strategy_type=strategy_type,
+            alpha=alpha
         )
 
     config = ServerConfig(num_rounds=num_rounds)

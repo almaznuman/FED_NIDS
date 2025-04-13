@@ -22,12 +22,14 @@ class CustomFedAvg(FedAvg):
     results to W&B if enabled.
     """
 
-    def __init__(self, run_config: UserConfig, use_wandb: bool, *args, **kwargs):
+    def __init__(self, run_config: UserConfig, use_wandb: bool, strategy_type: str, alpha: float, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Create a directory where to save results from this run
         self.save_path, self.run_dir = create_run_dir(run_config)
         self.use_wandb = use_wandb
+        self.strategy_type = strategy_type
+        self.alpha = alpha
         # Initialise W&B if set
         if use_wandb:
             self._init_wandb_project()
@@ -40,7 +42,7 @@ class CustomFedAvg(FedAvg):
 
     def _init_wandb_project(self):
         # init W&B
-        wandb.init(project=PROJECT_NAME, name=f"{str(self.run_dir)}-ServerApp")
+        wandb.init(project=PROJECT_NAME, name=f"{self.strategy_type}- Alpha{self.alpha}")
 
     def _store_results(self, tag: str, results_dict):
         """Store results in dictionary, then save as JSON."""
