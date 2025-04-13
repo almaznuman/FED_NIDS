@@ -89,7 +89,8 @@ def load_model(learning_rate: float = 0.001, num_classes: int = 10):
     """
     # Create model but defer device placement to when it's actually used
     model = CNNBiGRUMulticlassModel(input_dim=len(features), num_classes=num_classes)
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
+    # Remove weight_decay to match centralized implementation
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.CrossEntropyLoss()
     
     return {
@@ -178,12 +179,13 @@ def preprocess_data(data):
     return X_scaled, y
 
 
-def load_data(partition_id, num_partitions):
+def load_data(partition_id, num_partitions, alpha):
     """Load and preprocess data for the specified partition.
     
     Args:
         partition_id: ID of the partition to load
         num_partitions: Total number of partitions
+        alpha: Heterogeneity factor
         
     Returns:
         tuple: (train_loader, test_loader) with DataLoader objects
@@ -199,7 +201,7 @@ def load_data(partition_id, num_partitions):
         partitioner = DirichletPartitioner(
             num_partitions=num_partitions,
             partition_by="attack_cat",  # Fixed target column name
-            alpha=0.5,
+            alpha=alpha,
             self_balancing=False,
             seed=42
         )
@@ -212,6 +214,7 @@ def load_data(partition_id, num_partitions):
         partitioner.dataset = dataset["train"]
         fds = partitioner  # Cache the partitioner
 
+    print(alpha)
     # Load partition
     partition = fds.load_partition(partition_id=partition_id)
     data = pd.DataFrame(partition)
@@ -316,6 +319,18 @@ def train(net, trainloader, epochs, optimizer, criterion, device):
     net = net.to(device)
     criterion = criterion.to(device)
     net.train()
+    
+    # Add LR scheduler to match centralized implementation
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=0.1, patience=3, verbose=True
+    )
+    
+    # Early stopping variables
+    best_loss = float('inf')
+    early_stopping_counter = 0
+    patience = 5  # Same as centralized
+    best_model_state = None
+    
     running_loss = 0.0
     total_batches = 0
     
@@ -343,9 +358,28 @@ def train(net, trainloader, epochs, optimizer, criterion, device):
             # Update statistics
             epoch_loss += loss.item()
             batch_count += 1
-            
+        
         # Calculate average loss for this epoch
         avg_epoch_loss = epoch_loss / batch_count
+        
+        # Update the scheduler based on validation loss
+        scheduler.step(avg_epoch_loss)
+        
+        # Early stopping check
+        if avg_epoch_loss < best_loss:
+            best_loss = avg_epoch_loss
+            best_model_state = net.state_dict().copy()
+            early_stopping_counter = 0
+        else:
+            early_stopping_counter += 1
+            
+        if early_stopping_counter >= patience:
+            print(f'Early stopping triggered after {epoch + 1} epochs')
+            # Load the best model
+            if best_model_state is not None:
+                net.load_state_dict(best_model_state)
+            break
+        
         running_loss += avg_epoch_loss
         total_batches += 1
     

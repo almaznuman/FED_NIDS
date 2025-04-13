@@ -196,9 +196,9 @@ def client_fn(context: Context):
     # Get client config
     partition_id = context.node_config["partition-id"]
     num_partitions = context.node_config["num-partitions"]
-    
+    alpha = context.run_config["alpha"]
     # Load data
-    trainloader, testloader = load_data(partition_id, num_partitions)
+    trainloader, testloader = load_data(partition_id, num_partitions, alpha)
 
     # Get run config
     epochs = context.run_config["local-epochs"]
