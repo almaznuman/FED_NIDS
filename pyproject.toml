@@ -16,11 +16,11 @@ publisher = "flwrlabs"
 default = "local-sim-gpu"
 
 [tool.flwr.app.components]
-serverapp = "baselines.cifar_10_baseline.server_app:app"
-clientapp = "baselines.cifar_10_baseline.client_app:app"
+serverapp = "Models.final_CNNBIGRU_multiclass.server_app:app"
+clientapp = "Models.final_CNNBIGRU_multiclass.client_app:app"
 
 [tool.flwr.app.config]
-num-server-rounds = 5
+num-server-rounds = 1
 strategy-type = "fedavg"
 diversity-weight = 0.0
 fraction-evaluate = 1
@@ -31,8 +31,8 @@ batch-size = 32
 learning-rate = 0.001
 verbose = false
 server-device = "cuda:0"
-use-wandb = false
-alpha = 1
+use-wandb = true
+alpha = 0.5
 
 [tool.flwr.federations.local-sim.options]
 num-supernodes = 10

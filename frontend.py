@@ -27,7 +27,7 @@ def get_available_models():
             "serverapp": "Models.final_CNNBIGRU_multiclass.server_app:app",
             "clientapp": "Models.final_CNNBIGRU_multiclass.client_app:app"
         },
-        "CNN-BIGRU": {
+        "CNN-BIGRU_binary": {
             "serverapp": "Models.final_CNNBIGRU.server_app:app",
             "clientapp": "Models.final_CNNBIGRU.client_app:app"
         },
@@ -171,8 +171,8 @@ def main():
                                      )
 
         # Add alpha parameter selection
-        default_alpha = config.get("alpha", 50)
-        alpha_options = [0.01, 0.1, 0.5]
+        default_alpha = config.get("alpha", 1)
+        alpha_options = [0.01, 0.1, 0.5, 1]
         alpha_index = 0  # Default to first option if current value isn't in our options
 
         # Find if current alpha is in our options
@@ -184,7 +184,7 @@ def main():
             options=alpha_options,
             index=alpha_index,
             horizontal=True,
-            help="Controls the influence of client reliability in model aggregation"
+            help="Controls the level of data heterogeneity between clients"
         )
 
         # Create run button - enabled for all strategies
@@ -300,7 +300,7 @@ def main():
             - Bidirectional GRU for temporal dependencies
             - Optimized for multiclass classification
             """,
-            "CNN-BIGRU": """
+            "CNN-BIGRU_binary": """
             ### CNN-BiGRU
             
             **Architecture:**
