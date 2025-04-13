@@ -210,7 +210,6 @@ def load_data(partition_id, num_partitions, alpha):
         partitioner.dataset = dataset["train"]
         fds = partitioner  # Cache the partitioner
 
-    print(alpha)
     # Load partition
     partition = fds.load_partition(partition_id=partition_id)
     data = pd.DataFrame(partition)
