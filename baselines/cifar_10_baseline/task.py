@@ -39,16 +39,15 @@ class Net(nn.Module):
 fds = None  # Cache FederatedDataset
 
 
-def load_data(partition_id: int, num_partitions: int):
+def load_data(partition_id: int, num_partitions: int, alpha: float):
     """Load partition CIFAR10 data."""
     # Only initialize `FederatedDataset` once
     global fds
     if fds is None:
-        # Use DirichletPartitioner instead of IidPartitioner for more realistic non-IID data
         partitioner = DirichletPartitioner(
             num_partitions=num_partitions,
             partition_by="label",
-            alpha=0.01,  # Lower alpha creates more non-IID partitioning
+            alpha=alpha,  # Lower alpha creates more non-IID partitioning
             seed=42,
         )
         fds = FederatedDataset(
