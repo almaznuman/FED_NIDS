@@ -329,7 +329,7 @@ def main():
         st.markdown("#### Model Visualization")
         if model == "CNN-BIGRU_multiclass":
             st.markdown("```\nInput → Conv1D → BiGRU → Dense → Output (Multiclass)\n```")
-        elif model == "CNN-BIGRU":
+        elif model == "CNN-BIGRU_binary":
             st.markdown("```\nInput → Conv1D → BiGRU → Dense → Output (Binary)\n```")
         elif model == "FMNIST-Baseline":
             st.markdown("```\nInput → Conv2D → MaxPool → Dense → Output\n```")

@@ -16,8 +16,8 @@ publisher = "flwrlabs"
 default = "local-sim-gpu"
 
 [tool.flwr.app.components]
-serverapp = "Models.final_CNNBIGRU_multiclass.server_app:app"
-clientapp = "Models.final_CNNBIGRU_multiclass.client_app:app"
+serverapp = "Models.final_CNNBIGRU.server_app:app"
+clientapp = "Models.final_CNNBIGRU.client_app:app"
 
 [tool.flwr.app.config]
 num-server-rounds = 1
