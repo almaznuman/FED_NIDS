@@ -1,9 +1,3 @@
-"""Example demonstrating how to integrate the diversity-aware strategy with Flower.
-
-This file shows how to use the DiversityAwareLossStrategy with the existing server application
-for federated network intrusion detection.
-"""
-
 # import logging
 from typing import List, Tuple, Optional, Dict
 

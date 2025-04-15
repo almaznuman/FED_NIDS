@@ -1,5 +1,3 @@
-"""Client selection strategies combining loss-based and gradient similarity approaches for CNNBIGRU."""
-
 import json
 import random
 from logging import INFO, WARNING
@@ -239,6 +237,7 @@ class LossBasedSelectionStrategy(FedAvg):
             results_dict={"centralized_loss": loss, **metrics}
         )
         return loss, metrics
+
 
 class ReliabilityIndex(LossBasedSelectionStrategy):
     """

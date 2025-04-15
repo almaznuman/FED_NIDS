@@ -1,5 +1,3 @@
-"""BiGRU: A Flower / PyTorch app for anomaly detection."""
-
 import pandas as pd
 from datasets import load_dataset
 from flwr.common.typing import UserConfig

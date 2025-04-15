@@ -1,5 +1,3 @@
-"""BiGRU: A Flower / PyTorch app for anomaly detection."""
-
 from flwr.client import ClientApp, NumPyClient
 from flwr.common import Context, ArrayRecord, RecordDict
 from Models.final_CNNBIGRU.task import (
