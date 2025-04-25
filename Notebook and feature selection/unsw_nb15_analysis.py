@@ -13,8 +13,8 @@ torch.manual_seed(42)
 np.random.seed(42)
 
 # Device configuration
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(f"Using device: {device}")
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# print(f"Using device: {device}")
 
 
 def preprocessData(train_path, test_path):
